@@ -7,7 +7,6 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}
 # Install the specified packages
 RUN pip install -r requirements.txt
 
-
 # Copy function code
 COPY src ${LAMBDA_TASK_ROOT}
 

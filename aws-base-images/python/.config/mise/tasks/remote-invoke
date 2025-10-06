@@ -25,24 +25,14 @@ fi
 
 echo "[*] Invoking the MyContainerLambdaFunction in AWS (stack: $STACK_NAME)"
 
-
-# Get the API endpoint from the stack outputs
-API_ENDPOINT=$(aws cloudformation describe-stacks \
-  --region "$REGION" \
-  --stack-name "$STACK_NAME" \
-  --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue" \
-  --output text)
-
-if [ -z "$API_ENDPOINT" ] || [ "$API_ENDPOINT" == "None" ]; then
-  echo "  [!] Could not find ApiEndpoint output in stack $STACK_NAME"
-  exit 1
-fi
-
-echo "  [*] Found API endpoint: $API_ENDPOINT"
-
 # Test /hello endpoint
 echo "[*] Invoking /hello endpoint with name=Brian"
-HELLO_RESPONSE=$(curl -s -w '\n%{http_code}' "$API_ENDPOINT/hello?name=Brian")
+HELLO_ENDPOINT=$(aws cloudformation describe-stacks \
+  --region "$REGION" \
+  --stack-name "$STACK_NAME" \
+  --query "Stacks[0].Outputs[?OutputKey=='HelloEndpoint'].OutputValue" \
+  --output text)
+HELLO_RESPONSE=$(curl -s -w '\n%{http_code}' "$HELLO_ENDPOINT?name=Brian")
 HELLO_BODY=$(echo "$HELLO_RESPONSE" | head -n1)
 HELLO_STATUS=$(echo "$HELLO_RESPONSE" | tail -n1)
 if [ "$HELLO_STATUS" != "200" ]; then
@@ -54,7 +44,12 @@ fi
 
 # Test /goodbye endpoint
 echo "[*] Invoking /goodbye endpoint with name=Brian"
-GOODBYE_RESPONSE=$(curl -s -w '\n%{http_code}' "$API_ENDPOINT/goodbye?name=Brian")
+GOODBYE_ENDPOINT=$(aws cloudformation describe-stacks \
+  --region "$REGION" \
+  --stack-name "$STACK_NAME" \
+  --query "Stacks[0].Outputs[?OutputKey=='GoodbyeEndpoint'].OutputValue" \
+  --output text)
+GOODBYE_RESPONSE=$(curl -s -w '\n%{http_code}' "$GOODBYE_ENDPOINT?name=Brian")
 GOODBYE_BODY=$(echo "$GOODBYE_RESPONSE" | head -n1)
 GOODBYE_STATUS=$(echo "$GOODBYE_RESPONSE" | tail -n1)
 if [ "$GOODBYE_STATUS" != "200" ]; then
@@ -64,6 +59,6 @@ else
   echo "  [*] /goodbye response: $GOODBYE_BODY"
 fi
 
-# Retrieve CloudWatch log entries using SAM CLI
-echo "\n[*] Latest CloudWatch log entries via SAM CLI:"
-sam logs --stack-name "$STACK_NAME" -s '10min ago' --region "$REGION"
+# Retrieve CloudWatch log entries for the Lambda function using SAM CLI
+echo "\n[*] Latest CloudWatch log entries for MyContainerLambdaFunction via SAM CLI:"
+sam logs --stack-name "$STACK_NAME" --name MyContainerLambdaFunction -s '10min ago' --region "$REGION"

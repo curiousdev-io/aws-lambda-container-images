@@ -30,7 +30,7 @@ ECR_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME:$IMAGE_TAG"
 aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 if [ $? -ne 0 ]; then
 	echo "[!] Docker login to ECR failed."
-	echo "Remediation: Ensure you have Docker running and are using the correct AWS credentials. Try 'aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com' manually."
+	echo "Ensure you have Docker running and are using the correct AWS credentials. Try 'aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com' manually."
 	exit 1
 fi
 
