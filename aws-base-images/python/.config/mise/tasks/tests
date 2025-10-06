@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#MISE description="Run all unit tests in the tests directory using uv and pytest."
+
+set -euo pipefail
+
+# Install dependencies and run tests
+
+if [ ! -d ".venv" ]; then
+	uv venv
+fi
+uv pip install -e .
+uv pip install pytest
+uv pip install aws-lambda-powertools
+source .venv/bin/activate
+export PYTHONPATH="${PYTHONPATH-}:$(pwd)/src"
+pytest tests

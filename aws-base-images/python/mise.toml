@@ -1,0 +1,10 @@
+[tools]
+python = "3.13"
+ruff = "latest"
+awscli = "latest"
+golang = "1.25.1"
+jq = "latest"
+pre-commit = "latest"
+
+[tasks]
+pre-commit = "bash .config/mise/tasks/pre-commit"

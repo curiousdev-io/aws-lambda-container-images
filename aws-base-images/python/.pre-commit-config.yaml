@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.7
+    hooks:
+      - id: ruff
+      - id: ruff-format
+
+# Run mise tests as a local hook
+  - repo: local
+    hooks:
+      - id: mise-tests
+        name: Run mise tests
+        entry: mise run test
+        language: system
+        pass_filenames: false
+      - id: sam-validate
+        name: Run sam validate
+        entry: sam validate --region us-east-1
+        language: system
+        pass_filenames: false

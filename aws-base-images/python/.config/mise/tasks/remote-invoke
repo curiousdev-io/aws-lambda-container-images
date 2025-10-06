@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+#MISE description="Invoke the MyContainerLambdaFunction in AWS"
+
+
+# Usage: remote-invoke <aws-region>
+REGION="$1"
+PROJECT_ROOT="${MISE_PROJECT_ROOT:-$(pwd)}"
+SAMCONFIG_FILE="$PROJECT_ROOT/sam/samconfig.toml"
+STACK_NAME=""
+
+if [ -z "$REGION" ]; then
+  echo "Usage: $0 <aws-region>"
+  exit 1
+fi
+
+# Extract stack_name from samconfig.toml
+if [ -f "$SAMCONFIG_FILE" ]; then
+  STACK_NAME=$(grep '^stack_name' "$SAMCONFIG_FILE" | head -n1 | cut -d'=' -f2 | tr -d '" ')
+fi
+
+if [ -z "$STACK_NAME" ]; then
+  echo "[!] Could not find stack_name in $SAMCONFIG_FILE. Please provide a valid samconfig.toml."
+  exit 1
+fi
+
+echo "[*] Invoking the MyContainerLambdaFunction in AWS (stack: $STACK_NAME)"
+
+
+# Get the API endpoint from the stack outputs
+API_ENDPOINT=$(aws cloudformation describe-stacks \
+  --region "$REGION" \
+  --stack-name "$STACK_NAME" \
+  --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue" \
+  --output text)
+
+if [ -z "$API_ENDPOINT" ] || [ "$API_ENDPOINT" == "None" ]; then
+  echo "  [!] Could not find ApiEndpoint output in stack $STACK_NAME"
+  exit 1
+fi
+
+echo "  [*] Found API endpoint: $API_ENDPOINT"
+
+# Test /hello endpoint
+echo "[*] Invoking /hello endpoint with name=Brian"
+HELLO_RESPONSE=$(curl -s -w '\n%{http_code}' "$API_ENDPOINT/hello?name=Brian")
+HELLO_BODY=$(echo "$HELLO_RESPONSE" | head -n1)
+HELLO_STATUS=$(echo "$HELLO_RESPONSE" | tail -n1)
+if [ "$HELLO_STATUS" != "200" ]; then
+  echo "  [!] /hello endpoint returned status $HELLO_STATUS"
+  echo "$HELLO_BODY"
+else
+  echo "  [*] /hello response: $HELLO_BODY"
+fi
+
+# Test /goodbye endpoint
+echo "[*] Invoking /goodbye endpoint with name=Brian"
+GOODBYE_RESPONSE=$(curl -s -w '\n%{http_code}' "$API_ENDPOINT/goodbye?name=Brian")
+GOODBYE_BODY=$(echo "$GOODBYE_RESPONSE" | head -n1)
+GOODBYE_STATUS=$(echo "$GOODBYE_RESPONSE" | tail -n1)
+if [ "$GOODBYE_STATUS" != "200" ]; then
+  echo "  [!] /goodbye endpoint returned status $GOODBYE_STATUS"
+  echo "$GOODBYE_BODY"
+else
+  echo "  [*] /goodbye response: $GOODBYE_BODY"
+fi
+
+# Retrieve CloudWatch log entries using SAM CLI
+echo "\n[*] Latest CloudWatch log entries via SAM CLI:"
+sam logs --stack-name "$STACK_NAME" -s '10min ago' --region "$REGION"

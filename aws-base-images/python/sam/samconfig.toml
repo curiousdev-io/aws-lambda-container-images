@@ -1,0 +1,10 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "aws-base-image-python"
+resolve_s3 = true
+s3_prefix = "aws-base-image-python"
+region = "us-east-1"
+parameter_overrides = "EcrImageUri=408023262302.dkr.ecr.us-east-1.amazonaws.com/mycontainerlambdafunction:3.13"
+image_repositories = []
+capabilities = "CAPABILITY_IAM"

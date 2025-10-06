@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#MISE description="Build, publish, and deploy the AWS Lambda container image and SAM stack."
+
+set -euo pipefail
+
+REGION="${1:-us-east-1}"
+
+run_task() {
+    local task="$1"
+    echo "[*] Running mise task: $task"
+    if ! mise run "$task" -- "$REGION"; then
+        echo "[!] Task '$task' failed. Aborting build-and-deploy."
+        exit 1
+    fi
+}
+
+run_task create-image
+run_task publish-image
+run_task sam-build
+run_task sam-deploy
+
+echo "[*] Build and deploy completed successfully."

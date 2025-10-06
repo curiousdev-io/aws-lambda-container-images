@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#MISE description="Create an AWS ECR repo matching the Lambda function's logical name"
+
+# Usage: create-image-repo <aws-region>
+REGION="$1"
+
+# Use the logical name and convert to lower-case for ECR
+LOGICAL_NAME="MyContainerLambdaFunction"
+REPO_NAME=$(echo "$LOGICAL_NAME" | tr '[:upper:]' '[:lower:]')
+
+if [ -z "$REGION" ]; then
+	echo "Usage: $0 <aws-region>"
+	exit 1
+fi
+
+# Get AWS account number
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+echo "[*] Creating ECR repo: $REPO_NAME in region $REGION for account $ACCOUNT_ID"
+
+# Check if repo exists
+EXISTS=$(aws ecr describe-repositories --region "$REGION" --repository-names "$REPO_NAME" --query "repositories[0].repositoryName" --output text 2>/dev/null)
+if [ "$EXISTS" == "$REPO_NAME" ]; then
+	echo "[!] ECR repo $REPO_NAME already exists in $REGION. Aborting."
+	exit 1
+fi
+
+# Create repo
+aws ecr create-repository --region "$REGION" --repository-name "$REPO_NAME"
+
+if [ $? -ne 0 ]; then
+    echo "[!] Failed to create ECR repo $REPO_NAME in $REGION"
+    exit 1
+fi
+echo "[*] ECR repo $REPO_NAME created."

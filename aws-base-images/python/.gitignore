@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache/
+venv/
+.venv/
+env/
+ENV/
+.ruff_cache/
+
+# AWS SAM
+.aws-sam/
+
+# VS Code
+.vscode/
+
+# Misc
+*.log
+*.sqlite3
+.env
+.DS_Store
+
+# Pre-commit
+.pre-commit-cache/
+
+# Docker
+*.pid
+*.lock
+
+# Node
+node_modules/
+
+# System
+Thumbs.db

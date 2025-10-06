@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Build the AWS Lambda Python container image"
+
+echo "[*] Creating image..."
+
+docker buildx build --platform linux/arm64 --provenance=false --tag curiousdev-io/python:3.13 .
