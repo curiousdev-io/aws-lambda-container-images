@@ -561,8 +561,8 @@ If you were following along then both local and AWS resources have been created.
 mise run cleanup -- ${AWS_REGION}
 ```
 
-<detail>
-<summary><summary>
+<details>
+<summary>Sample output</summary>
 
 ```bash
 ✗ mise run cleanup -- ${AWS_REGION}
@@ -584,4 +584,4 @@ Untagged: 123456789012.dkr.ecr.us-east-1.amazonaws.com/mycontainerlambdafunction
 [*] Cleanup complete.
 ```
 
-</detail>
+</details>
