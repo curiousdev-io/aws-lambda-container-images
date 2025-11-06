@@ -1,6 +1,6 @@
 # AWS Base Images - Python
 
-This repository creates a _very_ simple AWS Lambda function and API Gateway HTTP endpoint that uses a python3.13 base image provided by AWS.
+This repository creates a _very_ simple AWS Lambda function and API Gateway HTTP endpoint that uses a `python3.13` base image from AWS.
 
 There are two routes used by the API: `/hello` and `/goodbye`. Each route accepts an optional query parameter of `name`. The logical representation of the URL is `https://aws-api-endpoint/hello?name=Foo` or `https://aws-api-endpoint/goodbye?name=Bar`. The actual AWS API endpoint is determined when the application is deployed to AWS.
 
@@ -9,8 +9,6 @@ There are two routes used by the API: `/hello` and `/goodbye`. Each route accept
 * [mise](https://mise.jdx.dev/)
 
 * [uv](https://docs.astral.sh/uv/)
-
-* [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
 
 ## Installing Project Tools
 

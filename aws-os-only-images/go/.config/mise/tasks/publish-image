@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#MISE description="Publish the Docker image to AWS ECR"
+
+
+# Usage: publish-image <aws-region>
+REGION="$1"
+if [ -z "$REGION" ]; then
+	echo "Usage: $0 <aws-region>"
+	exit 1
+fi
+
+echo "[*] Publishing image to AWS ECR in region $REGION"
+
+# Get AWS account ID
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+if [ $? -ne 0 ] || [ -z "$ACCOUNT_ID" ]; then
+	echo "[!] Failed to get AWS account ID. Check your AWS credentials."
+	echo "Remediation: Run 'aws configure' to set up your credentials, or check your AWS_PROFILE environment variable."
+	exit 1
+fi
+
+
+# Use the logical name and convert to lower-case for ECR
+LOGICAL_NAME="MyOsOnlyContainerLambdaFunction"
+REPO_NAME=$(echo "$LOGICAL_NAME" | tr '[:upper:]' '[:lower:]')
+IMAGE_TAG="1.25"
+ECR_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME:$IMAGE_TAG"
+
+# Authenticate Docker to ECR
+aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
+if [ $? -ne 0 ]; then
+	echo "[!] Docker login to ECR failed."
+	echo "Ensure you have Docker running and are using the correct AWS credentials. Try 'aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com' manually."
+	exit 1
+fi
+
+
+# Create ECR repo if it doesn't exist
+aws ecr describe-repositories --region "$REGION" --repository-names "$REPO_NAME" > /dev/null 2>&1 || \
+	aws ecr create-repository --region "$REGION" --repository-name "$REPO_NAME"
+if [ $? -ne 0 ]; then
+	echo "[*] ECR repo $REPO_NAME does not exist. Creating..."
+	aws ecr create-repository --region "$REGION" --repository-name "$REPO_NAME"
+	if [ $? -ne 0 ]; then
+		echo "[!] Failed to create ECR repo $REPO_NAME."
+		echo "Check your IAM permissions for ECR. You may need 'ecr:CreateRepository'. Also verify the repo name meets ECR naming requirements."
+		exit 1
+	fi
+fi
+
+
+# Tag and push image
+docker tag "curiousdev-io/go:$IMAGE_TAG" "$ECR_URI"
+if [ $? -ne 0 ]; then
+	echo "[!] Failed to tag Docker image."
+	echo "Ensure the source image 'curiousdev-io/go:$IMAGE_TAG' exists locally. Run 'docker images' to check. Build the image if needed."
+	exit 1
+fi
+
+docker push "$ECR_URI"
+if [ $? -ne 0 ]; then
+	echo "[!] Failed to push Docker image to ECR."
+	echo "Check your network connection, Docker login status, and ECR permissions. Try 'docker push $ECR_URI' manually for more details."
+	exit 1
+fi
+
+echo "[*] Image published: $ECR_URI"

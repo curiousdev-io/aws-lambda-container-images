@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  EcrImageUri:
+    Type: String
+    Description: "The URI of the ECR image for the Lambda function"
+
+
+Resources:
+  MyOsOnlyContainerLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: !Ref EcrImageUri
+      MemorySize: 512
+      Timeout: 10
+      Architectures:
+        - arm64
+      Events:
+        HelloApi:
+          Type: HttpApi
+          Properties:
+            Path: /hello
+            Method: GET
+            ApiId: !Ref MyApi
+        GoodbyeApi:
+          Type: HttpApi
+          Properties:
+            Path: /goodbye
+            Method: GET
+            ApiId: !Ref MyApi
+
+  MyOsOnlyContainerLambdaFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${MyOsOnlyContainerLambdaFunction}"
+      RetentionInDays: 14
+
+  MyApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - "GET"
+      AccessLogSettings:
+        DestinationArn: !GetAtt MyApiLogGroup.Arn
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","routeKey":"$context.routeKey","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}'
+
+  MyApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/http-api/${MyApi}"
+      RetentionInDays: 14
+
+  LambdaPermissionForApiGateway:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref MyOsOnlyContainerLambdaFunction
+      Principal: "apigateway.amazonaws.com"
+
+Outputs:
+  LambdaFunctionArn:
+    Description: "ARN of the Lambda function"
+    Value: !GetAtt MyOsOnlyContainerLambdaFunction.Arn
+  HelloEndpoint:
+    Description: "URL of the HTTP API endpoint (no stage prefix)"
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/hello"
+  GoodbyeEndpoint:
+    Description: "URL of the HTTP API endpoint (no stage prefix)"
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/goodbye"
