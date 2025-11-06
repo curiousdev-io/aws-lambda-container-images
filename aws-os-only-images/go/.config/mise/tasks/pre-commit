@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#MISE description="Run Python linter, format code, and validate the SAM template"
+
+echo "[*] Running code linter and formatter..."
+ruff check src/ tests/
+ruff format src/ tests/
+echo
+echo "[*] Running unit tests..."
+mise run tests
+echo
+SAM_DIR="${MISE_PROJECT_ROOT:-$(pwd)}/sam"
+echo "[*] Validating SAM template at $SAM_DIR/template.yaml..."
+sam validate --template "$SAM_DIR/template.yaml" --lint --region us-east-1

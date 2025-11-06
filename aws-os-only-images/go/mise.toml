@@ -1,6 +1,4 @@
 [tools]
-python = "3.13"
-ruff = "latest"
 awscli = "latest"
 aws-sam = "latest"
 golang = "1.25.1"
