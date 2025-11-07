@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-#MISE description="Run Python linter, format code, and validate the SAM template"
+#MISE description="Run Go linter, run tests, and validate the SAM template"
 
-echo "[*] Running code linter and formatter..."
-ruff check src/ tests/
-ruff format src/ tests/
+echo "[*] Running code linter..."
+golangci-lint run ./...
 echo
 echo "[*] Running unit tests..."
-mise run tests
+mise run test
 echo
 SAM_DIR="${MISE_PROJECT_ROOT:-$(pwd)}/sam"
 echo "[*] Validating SAM template at $SAM_DIR/template.yaml..."
