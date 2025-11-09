@@ -4,6 +4,10 @@ This repository supports the [AWS Lambda Container Images](aws-lambda-container-
 
 * [AWS base image for Lambda](./aws-base-images/README.md)
 
+* [AWS OS-only image for Lambda](./aws-os-only-images/README.md)
+
+* [Custom image for Lambda](./custom-images/README.md)
+
 The project is self-contained; each example can be run independently.
 
 ## References

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#MISE description="Invoke the function locally using Docker"
+
+echo "[*] Starting a local instance of the function"
+
+# Check whether the port is already in use
+# If it is, print a message and continue
+nc -vz localhost 9000 > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  echo "  [!] A local instance is already running on port 9000"
+else
+  echo "[*] Starting a new local instance on port 9000" && docker run -p 9000:8080 curiousdev-io/custom-python:3.13 &
+fi
+
+# Wait a few seconds for the container to start
+sleep 3
+
+echo "[*] Invoking the function locally with /hello?name=Chris"
+curl "http://localhost:9000/2015-03-31/functions/function/invocations" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "version": "2.0",
+    "routeKey": "GET /hello",
+    "rawPath": "/hello",
+    "rawQueryString": "name=Chris",
+    "queryStringParameters": {"name": "Chris"},
+    "requestContext": {
+      "http": {
+        "method": "GET",
+        "path": "/hello"
+      }
+    }
+  }'

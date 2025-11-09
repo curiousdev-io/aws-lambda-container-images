@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Build the Custom Lambda Python container image"
+
+echo "[*] Creating image..."
+
+docker buildx build --no-cache --platform linux/arm64 --provenance=false --tag curiousdev-io/custom-python:3.13 .
