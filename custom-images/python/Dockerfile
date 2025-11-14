@@ -1,6 +1,6 @@
 ARG LAMBDA_TASK_ROOT="/var/task"
 
-# Build stage
+# --- Build stage ---
 FROM cgr.dev/chainguard/python:latest-dev AS builder
 
 ARG LAMBDA_TASK_ROOT
@@ -21,7 +21,7 @@ ADD --chmod=755 https://github.com/aws/aws-lambda-runtime-interface-emulator/rel
 # Create entrypoint script in build stage
 COPY --chmod=755 entry.py /app/entry.py
 
-# Runtime stage  
+# --- Runtime stage ---
 FROM cgr.dev/chainguard/python:latest AS runtime
 
 ARG LAMBDA_TASK_ROOT

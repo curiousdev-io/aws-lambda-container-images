@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#MISE description="Cleanup local Docker, ECR, and CloudFormation resources for the Lambda function"
+set -euo pipefail
+
+REGION="${1:-us-east-1}"
+LOCAL_IMAGE_NAME="curiousdev-io/custom-go"
+LOCAL_IMAGE_TAG="1.25"
+REPO_NAME="mycustomgoimagelambdafunction"
+STACK_NAME=""
+PROJECT_ROOT="${MISE_PROJECT_ROOT:-$(pwd)}"
+SAMCONFIG_FILE="$PROJECT_ROOT/sam/samconfig.toml"
+
+# Stop local Docker containers for the image
+echo "[*] Stopping local Docker containers for $REPO_NAME:1.25..."
+docker ps --filter "ancestor=$REPO_NAME:1.25" --format "{{.ID}}" | xargs -r docker stop
+
+
+# Remove local Docker images
+echo "[*] Removing local Docker image $LOCAL_IMAGE_NAME:$LOCAL_IMAGE_TAG..."
+docker rmi -f "$LOCAL_IMAGE_NAME:$LOCAL_IMAGE_TAG" || true
+
+# Remove ECR-tagged local container image (if exists)
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+ECR_TAGGED_IMAGE="$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME:1.25"
+echo "[*] Removing ECR-tagged local image $ECR_TAGGED_IMAGE..."
+docker rmi -f "$ECR_TAGGED_IMAGE" || true
+
+# Get stack name from samconfig.toml
+if [ -f "$SAMCONFIG_FILE" ]; then
+  STACK_NAME=$(grep '^stack_name' "$SAMCONFIG_FILE" | head -n1 | cut -d'=' -f2 | tr -d '" ')
+fi
+if [ -z "$STACK_NAME" ]; then
+  echo "[!] Could not find stack_name in $SAMCONFIG_FILE. Skipping CloudFormation/ECR cleanup."
+  exit 1
+fi
+
+# Remove ECR repository
+echo "[*] Deleting ECR repository $REPO_NAME..."
+aws ecr delete-repository --repository-name "$REPO_NAME" --region "$REGION" --force || true
+
+# Delete CloudFormation stack
+echo "[*] Deleting CloudFormation stack $STACK_NAME..."
+aws cloudformation delete-stack --stack-name "$STACK_NAME" --region "$REGION"
+
+# Wait for stack deletion
+echo "[*] Waiting for CloudFormation stack $STACK_NAME to be deleted..."
+aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME" --region "$REGION"
+echo "[*] Cleanup complete."
