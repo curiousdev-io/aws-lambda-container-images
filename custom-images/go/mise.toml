@@ -1,0 +1,5 @@
+[tools]
+awscli = "latest"
+aws-sam = "latest"
+golang = "1.25.1"
+jq = "latest"

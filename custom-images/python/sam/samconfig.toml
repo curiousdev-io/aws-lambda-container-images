@@ -1,0 +1,10 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "aws-custom-image-python"
+resolve_s3 = true
+s3_prefix = "aws-custom-image-python"
+region = "us-east-1"
+parameter_overrides = "EcrImageUri=123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustompythonimagelambdafunction:3.13"
+image_repositories = []
+capabilities = "CAPABILITY_IAM"

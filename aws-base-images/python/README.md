@@ -383,7 +383,7 @@ Value               https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/hello
 
 Key                 LambdaFunctionArn
 Description         ARN of the Lambda function
-Value               arn:aws:lambda:us-east-1:408023262302:function:aws-base-image-python-MyContainerLambdaFunction-gryiKyoeEsrI 
+Value               arn:aws:lambda:us-east-1:123456789012:function:aws-base-image-python-MyContainerLambdaFunction-gryiKyoeEsrI 
 
 Key                 GoodbyeEndpoint
 Description         URL of the HTTP API endpoint (no stage prefix) 
@@ -408,7 +408,7 @@ You can open a web browser to the `HelloEndpoint` and `GoodbyeEndpoint`. Leave t
 ```bash
 ✗ curl https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/hello  
 {"timestamp": "2025-10-06T11:48:30.629330+00:00", "status": 200, "message": "Hello, World"}%                                        
-➜  python git:(main) ✗ curl https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/goodbye
+✗ curl https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/goodbye
 {"timestamp": "2025-10-06T11:48:35.031821+00:00", "status": 200, "message": "Goodbye, World"}% 
 ```
 
@@ -416,7 +416,7 @@ Pass in the query string parameter of `name` to add some variety.
 
 ✗ curl https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/hello\?name\=Chris
 {"timestamp": "2025-10-06T11:49:19.531466+00:00", "status": 200, "message": "Hello, Chris"}%                                        
-➜  python git:(main) ✗ curl https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/goodbye\?name\=Chris
+✗ curl https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/goodbye\?name\=Chris
 {"timestamp": "2025-10-06T11:49:27.582635+00:00", "status": 200, "message": "Goodbye, Chris"}%     
 
 Alternately, you can use the task [remote-invoke](.config/mise/tasks/remote-invoke) to invoke the `/hello` and `/goodbye` routes. The task will also retrieve CloudWatch log data over the previous 10 minutes.

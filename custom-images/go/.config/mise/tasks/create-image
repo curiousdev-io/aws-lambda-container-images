@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Build the AWS Lambda OS-only container image"
+
+echo "[*] Creating image..."
+
+docker buildx build --platform linux/arm64 --provenance=false --tag curiousdev-io/custom-go:1.25 .

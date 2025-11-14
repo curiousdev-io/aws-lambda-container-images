@@ -6,7 +6,7 @@ ruff check src/ tests/
 ruff format src/ tests/
 echo
 echo "[*] Running unit tests..."
-mise run test
+mise run tests
 echo
 SAM_DIR="${MISE_PROJECT_ROOT:-$(pwd)}/sam"
 echo "[*] Validating SAM template at $SAM_DIR/template.yaml..."

@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#MISE description="Deploy the AWS SAM application"
+
+set -euo pipefail
+
+# Usage: sam-deploy <aws-region>
+REGION="${1:-}"
+
+# Use mise variable for project root
+PROJECT_ROOT="${MISE_PROJECT_ROOT:-$(pwd)}"
+SAM_DIR="$PROJECT_ROOT/sam"
+TEMPLATE_FILE="$SAM_DIR/template.yaml"
+BUILD_DIR="$SAM_DIR/.aws-sam/build"
+
+if [[ -z "$REGION" ]]; then
+	echo "[!] Usage: $0 <aws-region>" >&2
+	exit 1
+fi
+
+if [[ ! -d "$SAM_DIR" ]]; then
+	echo "[!] Error: SAM directory not found at $SAM_DIR" >&2
+	exit 1
+fi
+
+if [[ ! -f "$TEMPLATE_FILE" ]]; then
+	echo "[!] Error: SAM template file not found at $TEMPLATE_FILE" >&2
+	exit 1
+fi
+
+if [[ ! -d "$BUILD_DIR" ]]; then
+	echo "[!] Error: SAM build directory not found at $BUILD_DIR. Run 'mise run sam-build' first." >&2
+	exit 1
+fi
+
+
+
+# Dynamically update samconfig.toml parameter_overrides for EcrImageUri
+SAMCONFIG_FILE="$SAM_DIR/samconfig.toml"
+LOGICAL_NAME="MyCustomPythonImageLambdaFunction"
+REPO_NAME=$(echo "$LOGICAL_NAME" | tr '[:upper:]' '[:lower:]')
+
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+IMAGE_TAG="3.13"
+ECR_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME:$IMAGE_TAG"
+
+if [[ -f "$SAMCONFIG_FILE" ]]; then
+	echo "[*] Updating parameter_overrides in $SAMCONFIG_FILE..."
+			# Use yq if available, else fallback to sed
+			if command -v yq >/dev/null 2>&1; then
+				yq -i ".default.deploy.parameters.parameter_overrides = 'EcrImageUri=$ECR_URI'" "$SAMCONFIG_FILE"
+			else
+				# Remove existing parameter_overrides line
+				sed -i '' '/^parameter_overrides =/d' "$SAMCONFIG_FILE"
+				# Add new parameter_overrides line after region
+				sed -i '' "/^region =/a\\
+parameter_overrides = \"EcrImageUri=$ECR_URI\"
+" "$SAMCONFIG_FILE"
+			fi
+fi
+
+echo "[*] Deploying AWS SAM stack to region $REGION..."
+if ! sam deploy \
+    --config-file "$SAMCONFIG_FILE" \
+	--region "$REGION" \
+	--template-file "$BUILD_DIR/template.yaml" \
+	--capabilities CAPABILITY_IAM \
+	--image-repositories MyCustomPythonImageLambdaFunction="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME"; then
+		echo "[!] Error: SAM deploy failed." >&2
+		exit 1
+fi
+echo "[*] Deploy complete."

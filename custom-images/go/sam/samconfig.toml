@@ -1,0 +1,10 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "aws-custom-image-go"
+resolve_s3 = true
+s3_prefix = "aws-custom-image-go"
+region = "us-east-1"
+parameter_overrides = "EcrImageUri=123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25"
+image_repositories = []
+capabilities = "CAPABILITY_IAM"
