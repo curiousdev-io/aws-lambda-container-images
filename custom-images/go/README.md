@@ -1,6 +1,6 @@
 # Custom Images - Go
 
-This repository creates a _very_ simple AWS Lambda function and API Gateway HTTP endpoint that uses a base image from [Chainguard](https://www.chainguard.dev/).
+This repository creates a _very_ simple AWS Lambda function and API Gateway HTTP endpoint that uses a base [golang:1.25-alpine](https://hub.docker.com/_/golang/) image in the **build** stage and a [alpine:3.22](https://hub.docker.com/_/alpine) image in the **runtime** stage.
 
 There are two routes used by the API: `/hello` and `/goodbye`. Each route accepts an optional query parameter of `name`. The logical representation of the URL is `https://aws-api-endpoint/hello?name=Foo` or `https://aws-api-endpoint/goodbye?name=Bar`. The actual AWS API endpoint is determined when the application is deployed to AWS.
 

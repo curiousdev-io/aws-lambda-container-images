@@ -3,8 +3,6 @@ ARG LAMBDA_TASK_ROOT="/var/task"
 # --- Build stage ---
 FROM golang:1.25-alpine AS build
 
-RUN apk add --no-cache python3 py3-pip
-
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
