@@ -5,6 +5,6 @@ stack_name = "aws-lambda-os-only-image"
 resolve_s3 = true
 s3_prefix = "aws-lambda-os-only-image"
 region = "us-east-1"
-parameter_overrides = "EcrImageUri=408023262302.dkr.ecr.us-east-1.amazonaws.com/myosonlycontainerlambdafunction:1.25"
+parameter_overrides = "EcrImageUri=123456789012.dkr.ecr.us-east-1.amazonaws.com/myosonlycontainerlambdafunction:1.25"
 image_repositories = []
 capabilities = "CAPABILITY_IAM"

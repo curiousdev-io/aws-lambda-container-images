@@ -383,7 +383,7 @@ Value               https://iouibh3kyg.execute-api.us-east-1.amazonaws.com/hello
 
 Key                 LambdaFunctionArn
 Description         ARN of the Lambda function
-Value               arn:aws:lambda:us-east-1:408023262302:function:aws-base-image-python-MyContainerLambdaFunction-gryiKyoeEsrI 
+Value               arn:aws:lambda:us-east-1:123456789012:function:aws-base-image-python-MyContainerLambdaFunction-gryiKyoeEsrI 
 
 Key                 GoodbyeEndpoint
 Description         URL of the HTTP API endpoint (no stage prefix) 

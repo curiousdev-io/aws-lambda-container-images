@@ -188,7 +188,7 @@ We are following the pattern of creating one ECR repository per function.
 ```bash
 ✗ mise run create-image-repo -- ${AWS_REGION}
 [create-image-repo] $ ~/code/curiousdev-io/aws-lambda-container-images/custom-images/go/.config/mise/tasks/create-image-repo us-east…
-[*] Creating ECR repo: mycustomgoimagelambdafunction in region us-east-1 for account 408023262302
+[*] Creating ECR repo: mycustomgoimagelambdafunction in region us-east-1 for account 123456789012
 [*] ECR repo mycustomgoimagelambdafunction created.
 ```
 </details>
@@ -207,7 +207,7 @@ mise run publish-image -- ${AWS_REGION}
 [publish-image] $ ~/code/curiousdev-io/aws-lambda-container-images/custom-images/go/.config/mise/tasks/publish-image us-east-1
 [*] Publishing image to AWS ECR in region us-east-1
 Login Succeeded
-The push refers to repository [408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction]
+The push refers to repository [123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction]
 4f4fb700ef54: Pushed 
 cebaf02df8c8: Pushed 
 d5938dc1ac89: Pushed 
@@ -215,7 +215,7 @@ d5938dc1ac89: Pushed
 6b59a28fa201: Pushed 
 b0b975ca786f: Pushed 
 1.25: digest: sha256:19d2e0d77d765c2804100083b7c0ba5da5b2e5890b289f0000423d1404af5b7f size: 1866
-[*] Image published: 408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25
+[*] Image published: 123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25
 ```
 
 </details>
@@ -284,7 +284,7 @@ mise run build-and-deploy -- ${AWS_REGION}
 [publish-image] $ ~/code/curiousdev-io/aws-lambda-container-images/custom-images/go/.config/mise/tasks/publish-image us-east-1
 [*] Publishing image to AWS ECR in region us-east-1
 Login Succeeded
-The push refers to repository [408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction]
+The push refers to repository [123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction]
 0710e66e3c6b: Layer already exists 
 cebaf02df8c8: Layer already exists 
 4f4fb700ef54: Layer already exists 
@@ -292,7 +292,7 @@ cebaf02df8c8: Layer already exists
 b0b975ca786f: Layer already exists 
 d5938dc1ac89: Layer already exists 
 1.25: digest: sha256:19d2e0d77d765c2804100083b7c0ba5da5b2e5890b289f0000423d1404af5b7f size: 1866
-[*] Image published: 408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25
+[*] Image published: 123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25
 [*] Running mise task: sam-build
 [sam-build] $ ~/code/curiousdev-io/aws-lambda-container-images/custom-images/go/.config/mise/tasks/sam-build us-east-1
 Building AWS SAM stack...
@@ -327,11 +327,11 @@ Build complete.
         Disable rollback             : False
         Deployment image repository  : 
                                        {
-                                           "MyCustomGoImageLambdaFunction": "408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction"
+                                           "MyCustomGoImageLambdaFunction": "123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction"
                                        }
         Deployment s3 bucket         : aws-sam-cli-managed-default-samclisourcebucket-1n87uhj5iy5vy
         Capabilities                 : ["CAPABILITY_IAM"]
-        Parameter overrides          : {"EcrImageUri": "408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25"}
+        Parameter overrides          : {"EcrImageUri": "123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25"}
         Signing Profiles             : {}
 
 Initiating deployment
@@ -362,7 +362,7 @@ Operation                        LogicalResourceId                ResourceType  
 ---------------------------------------------------------------------------------------------------------------------------------
 
 
-Changeset created successfully. arn:aws:cloudformation:us-east-1:408023262302:changeSet/samcli-deploy1763086775/b393986c-fc1e-4a5f-8c64-b214c0440566
+Changeset created successfully. arn:aws:cloudformation:us-east-1:123456789012:changeSet/samcli-deploy1763086775/b393986c-fc1e-4a5f-8c64-b214c0440566
 
 
 2025-11-13 21:19:42 - Waiting for stack create/update to complete
@@ -430,7 +430,7 @@ Value               https://z7mo376j24.execute-api.us-east-1.amazonaws.com/hello
 
 Key                 LambdaFunctionArn                                                                                            
 Description         ARN of the Lambda function                                                                                   
-Value               arn:aws:lambda:us-east-1:408023262302:function:aws-custom-image-go-MyCustomGoImageLambdaFunction-            
+Value               arn:aws:lambda:us-east-1:123456789012:function:aws-custom-image-go-MyCustomGoImageLambdaFunction-            
 eItSiiXmxgnh                                                                                                                     
 
 Key                 GoodbyeEndpoint                                                                                              
@@ -594,8 +594,8 @@ mise run cleanup -- ${AWS_REGION}
 [*] Stopping local Docker containers for mycustomgoimagelambdafunction:1.25...
 [*] Removing local Docker image curiousdev-io/custom-go:1.25...
 Untagged: curiousdev-io/custom-go:1.25
-[*] Removing ECR-tagged local image 408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25...
-Untagged: 408023262302.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25
+[*] Removing ECR-tagged local image 123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25...
+Untagged: 123456789012.dkr.ecr.us-east-1.amazonaws.com/mycustomgoimagelambdafunction:1.25
 [*] Deleting ECR repository mycustomgoimagelambdafunction...
 [*] Deleting CloudFormation stack aws-custom-image-go...
 [*] Waiting for CloudFormation stack aws-custom-image-go to be deleted...
